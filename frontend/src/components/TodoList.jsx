@@ -1,42 +1,73 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axios";
+import toast from "react-hot-toast"; // ✅ Toast import
 
 const TodoList = ({ todos, onChange }) => {
   const [editingTodo, setEditingTodo] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
+  // ✅ Toggle complete
   const toggleComplete = async (todo) => {
-    await axiosInstance.patch(`/todo/${todo._id}`, {
-      completed: !todo.completed,
-    });
-    onChange();
+    try {
+      await axiosInstance.patch(`/todo/${todo._id}`, {
+        completed: !todo.completed,
+      });
+      onChange();
+      toast.success(
+        todo.completed ? "Marked as Incomplete ⬜" : "Marked as Completed ✅"
+      );
+    } catch (error) {
+      console.error("Toggle Error:", error);
+      toast.error("Failed to update completion status ❌");
+    }
   };
 
+  // ✅ Delete Todo
   const deleteTodo = async (id) => {
-    await axiosInstance.delete(`/todo/${id}`);
-    onChange();
+    try {
+      await axiosInstance.delete(`/todo/${id}`);
+      onChange();
+      toast.success("Todo deleted successfully 🗑️");
+    } catch (error) {
+      console.error("Delete Error:", error);
+      toast.error("Failed to delete todo ❌");
+    }
   };
 
+  // ✅ Start Editing
   const startEdit = (todo) => {
     setEditingTodo(todo._id);
     setEditTitle(todo.title);
     setEditDescription(todo.description || "");
   };
 
+  // ✅ Cancel Editing
   const cancelEdit = () => {
     setEditingTodo(null);
     setEditTitle("");
     setEditDescription("");
   };
 
+  // ✅ Update Todo
   const updateTodo = async (id) => {
-    await axiosInstance.patch(`/todo/${id}`, {
-      title: editTitle,
-      description: editDescription,
-    });
-    cancelEdit();
-    onChange();
+    if (!editTitle.trim() || !editDescription.trim()) {
+      toast.error("Title and Description are required ⚠️");
+      return;
+    }
+
+    try {
+      await axiosInstance.patch(`/todo/${id}`, {
+        title: editTitle,
+        description: editDescription,
+      });
+      cancelEdit();
+      onChange();
+      toast.success("Todo updated successfully ✏️");
+    } catch (error) {
+      console.error("Update Error:", error);
+      toast.error("Failed to update todo ❌");
+    }
   };
 
   return (

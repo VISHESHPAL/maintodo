@@ -13,7 +13,7 @@ const Navbar = () => {
       {user ? (
         <div className="flex items-center gap-4">
           <span className="text-gray-700 font-medium">
-            Welcome, <span className="text-red-500">{user?.name}</span>
+            Welcome, <span className="text-red-600  p-5 uppercase ">{user?.name}</span>
           </span>
           <button
             onClick={logout}

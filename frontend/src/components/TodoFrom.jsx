@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axios";
+import toast from "react-hot-toast"; // ✅ import toast
 
 const TodoForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
@@ -7,12 +8,22 @@ const TodoForm = ({ onAdd }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) return;
 
-    await axiosInstance.post("/todo/add", { title, description });
-    setTitle("");
-    setDescription("");
-    onAdd();
+    if (!title.trim() ) {
+      toast.error("Title is Required !  ❌");
+      return;
+    }
+
+    try {
+      await axiosInstance.post("/todo/add", { title, description });
+      setTitle("");
+      setDescription("");
+      onAdd();
+      toast.success("Todo added successfully ✅");
+    } catch (error) {
+      console.error("Add Todo Error:", error);
+      toast.error(error.response?.data?.message || "Failed to add todo ❌");
+    }
   };
 
   return (
