@@ -14,7 +14,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: [
+      "http://localhost:5173", // for local dev (Vite)
+      process.env.FRONTEND_URL // for deployed frontend
+    ],
     credentials: true,
   })
 ); 
@@ -29,6 +32,7 @@ app.get("/", (req, res) => {
   res.send("Backend is Working ");
 });
 
+export default app
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`App is listening on PORT ${PORT}`);
